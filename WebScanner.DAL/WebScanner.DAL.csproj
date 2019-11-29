@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B050D3E8-D771-40E3-817B-4B9C83EA55A6}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>WebScanner</RootNamespace>
-    <AssemblyName>WebScanner</AssemblyName>
+    <ProjectGuid>{57662868-0C23-4647-AB45-BC6410724C1E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebScanner.DAL</RootNamespace>
+    <AssemblyName>WebScanner.DAL</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -54,10 +52,9 @@
   <ItemGroup>
     <Compile Include="Models\UrlScanDBContext.cs" />
     <Compile Include="Models\UrlScanModels.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Repositories\UrlScanRepository.cs" />
-    <Compile Include="UrlScanner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

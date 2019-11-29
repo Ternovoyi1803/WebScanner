@@ -2,8 +2,8 @@ using System;
 using System.Data.Entity;
 using System.Linq;
 
-namespace WebScanner.Models
-{  
+namespace WebScanner.DAL
+{
     public class UrlScanDBContext : DbContext
     {
         public UrlScanDBContext() : base("name=UrlScanDBContext")
@@ -12,5 +12,5 @@ namespace WebScanner.Models
         }
 
         public virtual DbSet<UrlScan> UrlScanEntities { get; set; }
-    }  
+    }
 }

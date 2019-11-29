@@ -8,10 +8,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using WebScanner.Models;
-using WebScanner.Repositories;
+using WebScanner.DAL;
 
-namespace WebScanner
+namespace WebScanner.BLL
 {
     //TODO add CancellationToken Stop
     //TODO how to pause tasks
@@ -20,7 +19,7 @@ namespace WebScanner
     public class UrlScanner
     {
         private static Semaphore semaphore;
-        private UrlScanRepository repository;
+        private IRepository<UrlScan> repository;
         private Regex regex;
 
         private string url;
@@ -41,6 +40,13 @@ namespace WebScanner
                 @"\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))");
 
             repository.RemoveAll();
+        }
+
+        // ctor with DI
+        public UrlScanner(string url, string word, int maxCountUrls, int maxCountThreads, IRepository<UrlScan> repository)
+            :this(url,word,maxCountUrls,maxCountThreads)
+        {
+            this.repository = repository;
         }
 
         public Task DoScan()
@@ -124,14 +130,6 @@ namespace WebScanner
             using (var client = new WebClient())
             {
                 return client.DownloadString(url);
-            }
-        }
-
-        private async Task<string> FetchWebPageAsync(string url)
-        {
-            using (var client = new HttpClient())
-            {
-                return await client.GetStringAsync(url);
             }
         }
     }

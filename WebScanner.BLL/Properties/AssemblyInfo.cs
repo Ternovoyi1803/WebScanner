@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WebScanner")]
+[assembly: AssemblyTitle("WebScanner.BLL")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WebScanner")]
+[assembly: AssemblyProduct("WebScanner.BLL")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("b050d3e8-d771-40e3-817b-4b9c83ea55a6")]
+[assembly: Guid("0750a5b3-18df-4539-9a87-800355cde2d4")]
 
 // Version information for an assembly consists of the following four values:
 //

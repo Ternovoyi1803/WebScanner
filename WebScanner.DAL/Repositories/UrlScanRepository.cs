@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebScanner.Models;
 
-namespace WebScanner.Repositories
+namespace WebScanner.DAL
 {
     //TODO Lock review and optimize
-    //TODO Add IRepository
-    public class UrlScanRepository : IDisposable
+    public class UrlScanRepository : IDisposable, IRepository<UrlScan>
     {
         private UrlScanDBContext db;
         private static object locker = new object();
@@ -18,25 +16,6 @@ namespace WebScanner.Repositories
         public UrlScanRepository()
         {
             db = new UrlScanDBContext();
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                db.Dispose();
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            if (!disposedValue)
-            {
-                db.Dispose();
-                GC.SuppressFinalize(this);
-                disposedValue = true;
-            }
         }
 
         public bool AddIfNotExists(UrlScan url)
@@ -95,9 +74,32 @@ namespace WebScanner.Repositories
                 .SingleOrDefault() != null ? true : false;
         }
 
+        #region Dispose pattern      
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                db.Dispose();
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!disposedValue)
+            {
+                db.Dispose();
+                GC.SuppressFinalize(this);
+                disposedValue = true;
+            }
+        }
+
         ~UrlScanRepository()
         {
             Dispose();
         }
+
+        #endregion
     }
 }
