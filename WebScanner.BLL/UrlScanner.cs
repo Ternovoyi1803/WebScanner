@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,20 +14,24 @@ using WebScanner.DAL;
 
 namespace WebScanner.BLL
 {
-    //TODO add CancellationToken Stop
     //TODO how to pause tasks
-    //TODO add scanned urls counter. Use Interlocked ? 
     //TODO add error logging
-    public class UrlScanner
+    public class UrlScanner: IUrlScanner
     {
-        private static Semaphore semaphore;
         private IRepository<UrlScan> repository;
+        private ConcurrentQueue<UrlScan> queue;
+        private CancellationTokenSource cancellationTokenSource;
+        private Task[] tasks;
         private Regex regex;
 
         private string url;
         private string word;
-        private int maxCountUrls;
         private int maxCountThreads;
+        private int maxCountUrls;
+        private volatile int urlsCounter;
+
+        public int UrlsCounter => urlsCounter;
+        public int MaxCountUrls => maxCountUrls;
 
         public UrlScanner(string url, string word, int maxCountUrls, int maxCountThreads)
         {
@@ -34,10 +40,15 @@ namespace WebScanner.BLL
             this.maxCountUrls = maxCountUrls;
             this.maxCountThreads = maxCountThreads;
 
-            semaphore = new Semaphore(maxCountThreads, maxCountThreads);
-            repository = new UrlScanRepository();
             regex = new Regex(@"(?<url>https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}" +
                 @"\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))");
+
+            repository = new UrlScanRepository();
+            queue = new ConcurrentQueue<UrlScan>();
+            queue.Enqueue(new UrlScan(url));
+
+            cancellationTokenSource = new CancellationTokenSource();
+            tasks = new Task[maxCountThreads];
 
             repository.RemoveAll();
         }
@@ -49,68 +60,74 @@ namespace WebScanner.BLL
             this.repository = repository;
         }
 
-        public Task DoScan()
+        public Task Start()
         {
-            var startUrl = new UrlScan(url);
-            var task = new Task(() => DoScan(startUrl));
-            task.Start();
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                tasks[i] = new Task((index) =>
+                {
+                    while (!cancellationTokenSource.IsCancellationRequested && urlsCounter < maxCountUrls)
+                    {
+                        Debug.WriteLine($"DoScan from task {index}\tUrlCounter {urlsCounter}");
+                        DoScan();
+                        Thread.Sleep(1000);
+                    }
+                }, i);
+                tasks[i].Start();
+            }
 
-            return task;
+            return Task.CompletedTask;
         }
 
-        private void DoScan(UrlScan urlScan)
+        public Task Stop()
         {
-            try
+            cancellationTokenSource.Cancel();
+
+            return Task.CompletedTask;
+        }
+
+        private void DoScan()
+        {
+            if (queue.IsEmpty)
+                return;
+
+            UrlScan model;
+            if (!queue.TryDequeue(out model))
+                return;
+
+            model.DateStart = DateTime.Now;
+            model.ScanStatus = ScanStatus.Loading;
+            
+            if (repository.AddIfNotExists(model))
             {
-                semaphore.WaitOne();
-                Console.WriteLine($"Thread: {Thread.CurrentThread.ManagedThreadId} starts...");
-
-                urlScan.ScanStatus = ScanStatus.Loading;
-                urlScan.DateStart = DateTime.Now;
-
-                if (!repository.AddIfNotExists(urlScan))
-                    return;
+                Interlocked.Increment(ref urlsCounter);
 
                 string text = null;
                 try
                 {
-                    text = FetchWebPage(urlScan.Url);
+                    text = FetchWebPage(model.Url);
 
                     if (text.Contains(word))
-                        urlScan.ScanStatus = ScanStatus.Found;
+                        model.ScanStatus = ScanStatus.Found;
                     else
-                        urlScan.ScanStatus = ScanStatus.NotFound;
+                        model.ScanStatus = ScanStatus.NotFound;
                 }
                 catch (Exception ex)
                 {
-                    urlScan.ScanStatus = ScanStatus.Failure;
-                    urlScan.FailureReason = ex.Message;
+                    model.ScanStatus = ScanStatus.Failure;
+                    model.FailureReason = ex.Message;
                 }
                 finally
                 {
-                    urlScan.DateEnd = DateTime.Now;
-                    repository.Update(urlScan);
+                    model.DateEnd = DateTime.Now;
+                    repository.Update(model);
                 }
 
-                if (string.IsNullOrWhiteSpace(text))
-                    return;
-
-                // Поиск ссылок внутри текста не считаеться как процесс сканирования
-                foreach (var url in GetChildUrls(text))
-                {
-                    var urlForScan = new UrlScan(url, urlScan.Url);
-                    new Task(() => DoScan(urlForScan)).Start();
-                    Thread.Sleep(100);
+                if (!string.IsNullOrWhiteSpace(text))
+                { 
+                    GetChildUrls(text)
+                        .ForEach(x => queue.Enqueue(new UrlScan(x, model.Url)));
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                Console.WriteLine($"Thread: {Thread.CurrentThread.ManagedThreadId} ends...");
-                semaphore.Release();
             }
         }
 

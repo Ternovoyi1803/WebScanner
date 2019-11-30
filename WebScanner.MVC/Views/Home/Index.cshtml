@@ -2,38 +2,29 @@
     ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron">
-    <h1>WebScanner</h1>
-    <p>
-        <ul style="list-style-type:disc">
-            <li>ASP.NET MVC 5</li>
-            <li>EF6</li>
-            <li>TPL</li>
-        </ul>
-    </p>
-    <p>
-        A simple web application that searches for text using links found in the text
-    </p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
+    <div>
         <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
+            <a class="btn btn-default" href="GetAll">GetAll</a>
         </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
+<div class="jumbotron">
+    <form method="post" action="/Scan/Scan">
+        <div class="form-group">
+            <label for="Start url">Start url</label>
+            <input type="url" name="StartUrl" class="form-control" id="Start url" placeholder="Enter start url">
+        </div>
+        <div class="form-group">
+            <label for="Maximum number of threads">Maximum number of threads</label>
+            <input type="number" name="MaxCountThreads" class="form-control" id="Maximum number of threads" placeholder="Enter maximum number of threads">
+        </div>
+        <div class="form-group">
+            <label for="Search text">Search text</label>
+            <input type="text" name="SearchText" class="form-control" id="Search text" placeholder="Enter search text">
+        </div>
+        <div class="form-group">
+            <label for="Maximum number of scanned url">Maximum number of scanned url</label>
+            <input type="number" name="MaxCountUrls" class="form-control" id="Maximum number of scanned url" placeholder="Enter maximum number of scanned url">
+        </div>
+        <button type="submit" class="btn btn-primary">Scan</button>
+    </form>
 </div>

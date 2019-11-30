@@ -10,7 +10,8 @@ namespace WebScanner.DAL
     {
         bool AddIfNotExists(T item);
         void Update(T item);
-        List<T> Read(ScanStatus status);
+        List<T> GetAll(ScanStatus status);
+        List<T> GetAll();
         void RemoveAll();
     }
 }

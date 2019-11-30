@@ -1,0 +1,39 @@
+﻿@model IEnumerable<WebScanner.DAL.UrlScan>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div>
+        <p>
+            <a class="btn btn-default" href="Update">Update</a>
+        </p>
+        <p>
+            <a class="btn btn-default" href="Stop">Stop</a>
+        </p>
+        <h3>Scanned urls</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Url</th>
+                    <th scope="col">ScanStatus</th>
+                    <th scope="col">DateStart</th>
+                    <th scope="col">DateEnd</th>
+                    <th scope="col">FailureReason</th>
+                    <th scope="col">UrlParent</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (WebScanner.DAL.UrlScan urlScan in Model)
+                {
+                <tr>
+                    <td>@urlScan.Url</td>
+                    <td>@urlScan.ScanStatus</td>
+                    <td>@urlScan.DateStart</td>
+                    <td>@urlScan.DateEnd</td>
+                    <td>@urlScan.FailureReason</td>
+                    <td>@urlScan.UrlParent</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>

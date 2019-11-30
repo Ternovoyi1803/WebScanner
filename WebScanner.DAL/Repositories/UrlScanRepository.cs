@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WebScanner.DAL
@@ -46,7 +47,7 @@ namespace WebScanner.DAL
             }
         }
 
-        public List<UrlScan> Read(ScanStatus status)
+        public List<UrlScan> GetAll(ScanStatus status)
         {
             lock (locker)
             {
@@ -57,12 +58,21 @@ namespace WebScanner.DAL
             }
         }
 
+        public List<UrlScan> GetAll()
+        {
+            lock (locker)
+            {
+                return db
+                .UrlScanEntities
+                .ToList();
+            }
+        }
+
         public void RemoveAll()
         {
             lock (locker)
             {
-                db.UrlScanEntities.RemoveRange(db.UrlScanEntities);
-                db.SaveChanges();
+                db.Database.ExecuteSqlCommand("TRUNCATE TABLE [WebScanner].[dbo].[UrlScans]");
             }
         }
 

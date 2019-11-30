@@ -8,6 +8,7 @@ namespace WebScanner.BLL
 {
     public interface IUrlScanner
     {
-        Task DoScan();
+        Task Start();
+        Task Stop();
     }
 }
