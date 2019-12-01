@@ -10,9 +10,9 @@
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            <div class="navbar-header">               
-                @Html.ActionLink("WebScanner", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>          
+            <div class="navbar-header">
+                @Html.ActionLink("WebScanner", "Index", "Scan", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
         </div>
     </div>
     <div class="container body-content">
@@ -26,6 +26,7 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryval")
     @RenderSection("scripts", required: false)
 </body>
 </html>

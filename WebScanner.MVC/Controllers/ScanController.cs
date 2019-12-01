@@ -17,12 +17,20 @@ namespace WebScanner.MVC.Controllers
         public ScanController(IRepository<UrlScan> repository)
         {
             this.repository = repository;
-        }      
+        }
+
+        public ActionResult Index()
+        {
+            return View();
+        }
 
         [HttpPost]
         public ActionResult Scan(StartScan model)
         {
-            if(scanner != null)
+            if (!ModelState.IsValid)
+                return View("Index");
+
+            if (scanner != null)
                 scanner.Stop();
 
             scanner = new UrlScanner(
