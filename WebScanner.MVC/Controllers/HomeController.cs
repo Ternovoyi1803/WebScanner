@@ -12,10 +12,5 @@ namespace WebScanner.MVC.Controllers
         {
             return View();
         }
-
-        public string GetAll()
-        {
-            return "hfhgfh";
-        }
     }
 }

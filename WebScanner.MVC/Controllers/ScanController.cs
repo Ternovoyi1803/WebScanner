@@ -17,11 +17,14 @@ namespace WebScanner.MVC.Controllers
         public ScanController(IRepository<UrlScan> repository)
         {
             this.repository = repository;
-        }
+        }      
 
         [HttpPost]
         public ActionResult Scan(StartScan model)
         {
+            if(scanner != null)
+                scanner.Stop();
+
             scanner = new UrlScanner(
                 url: model.StartUrl,
                 word: model.SearchText,
@@ -30,7 +33,7 @@ namespace WebScanner.MVC.Controllers
 
             scanner.Start();
 
-            return View(repository.GetAll());
+            return View(repository.GetAll().OrderByDescending(x => x.DateStart));
         }
 
         [HttpGet]

@@ -2,44 +2,75 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
     <div>
         <p>
-            <a class="btn btn-default" href="Pause">Pause</a>
-        </p>
-        <p>
-            <a class="btn btn-default" href="Resume">Resume</a>
-        </p>
-        <p>
-            <a class="btn btn-default" href="Update">Update</a>
-        </p>
-        <p>
-            <a class="btn btn-default" href="Stop">Stop</a>
-        </p>
-        <h3>Scanned urls</h3>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Url</th>
-                    <th scope="col">ScanStatus</th>
-                    <th scope="col">DateStart</th>
-                    <th scope="col">DateEnd</th>
-                    <th scope="col">FailureReason</th>
-                    <th scope="col">UrlParent</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (WebScanner.DAL.UrlScan urlScan in Model)
-                {
+            <div class="container">
+                <a class="btn btn-info" role="button" href="Update">Update</a>
+                <a class="btn btn-warning" role="button" href="Pause">Pause</a>
+                <a class="btn btn-primary" role="button" href="Resume">Resume</a>
+                <a class="btn btn-danger" role="button" href="Stop">Stop</a>
+            </div>
+        </p>        
+        <div class="container">
+            <h3>Scanning Monitor</h3>
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@urlScan.Url</td>
-                        <td>@urlScan.ScanStatus</td>
-                        <td>@urlScan.DateStart</td>
-                        <td>@urlScan.DateEnd</td>
-                        <td>@urlScan.FailureReason</td>
-                        <td>@urlScan.UrlParent</td>
+                        <th>Id</th>
+                        <th>Url</th>
+                        <th>ScanStatus</th>
+                        <th>DateStart</th>
+                        <th>DateEnd</th>
+                        <th>FailureReason</th>
+                        <th>UrlParent</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (WebScanner.DAL.UrlScan urlScan in Model)
+                    {
+                        var scanStatus = urlScan.ScanStatus;
+                        var rowStyle = string.Empty;
+
+                        switch (scanStatus)
+                        {
+                            case WebScanner.DAL.ScanStatus.Found:
+                                {
+                                    rowStyle = "success";
+                                    break;
+                                }
+                            case WebScanner.DAL.ScanStatus.Loading:
+                                {
+                                    rowStyle = "info";
+                                    break;
+                                }
+                            case WebScanner.DAL.ScanStatus.Failure:
+                                {
+                                    rowStyle = "danger";
+                                    break;
+                                }
+                            case WebScanner.DAL.ScanStatus.NotFound:
+                                {
+                                    rowStyle = "warning";
+                                    break;
+                                }
+                            default:
+                                {
+                                    rowStyle = "active";
+                                    break;
+                                }
+                        }
+
+                        <tr class="@rowStyle">
+                            <th>@urlScan.Id</th>
+                            <td>@urlScan.Url</td>
+                            <td>@urlScan.ScanStatus</td>
+                            <td>@urlScan.DateStart</td>
+                            <td>@urlScan.DateEnd</td>
+                            <td>@urlScan.FailureReason</td>
+                            <td>@urlScan.UrlParent</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>

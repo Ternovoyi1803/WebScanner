@@ -1,24 +1,24 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
-  
+
 <div class="jumbotron">
     <form method="post" action="/Scan/Scan">
         <div class="form-group">
             <label for="Start url">Start url</label>
-            <input type="url" name="StartUrl" class="form-control" id="Start url" placeholder="Enter start url">
+            <input type="url" name="StartUrl" value="https://ustimov.org/posts/20/" class="form-control" id="Start url" placeholder="Enter start url">
         </div>
         <div class="form-group">
             <label for="Maximum number of threads">Maximum number of threads</label>
-            <input type="number" name="MaxCountThreads" class="form-control" id="Maximum number of threads" placeholder="Enter maximum number of threads">
+            <input type="number" value="10" name="MaxCountThreads" class="form-control" id="Maximum number of threads" placeholder="Enter maximum number of threads">
         </div>
         <div class="form-group">
             <label for="Search text">Search text</label>
-            <input type="text" name="SearchText" class="form-control" id="Search text" placeholder="Enter search text">
+            <input type="text" value="hello" name="SearchText" class="form-control" id="Search text" placeholder="Enter search text">
         </div>
         <div class="form-group">
             <label for="Maximum number of scanned url">Maximum number of scanned url</label>
-            <input type="number" name="MaxCountUrls" class="form-control" id="Maximum number of scanned url" placeholder="Enter maximum number of scanned url">
+            <input type="number" value="100" name="MaxCountUrls" class="form-control" id="Maximum number of scanned url" placeholder="Enter maximum number of scanned url">
         </div>
         <button type="submit" class="btn btn-primary">Scan</button>
     </form>
