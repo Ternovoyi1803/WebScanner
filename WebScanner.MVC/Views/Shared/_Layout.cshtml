@@ -4,6 +4,32 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
+    <style>
+    .wrapper {
+        margin: 0 auto;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .progress_line {
+        background-color: #2fc54d;
+        bottom: 0;
+        color: #fff;
+        left: 0;
+        top: 0;
+        position: absolute;
+        text-align: center;
+    }
+
+    .progress_line-bg {
+        background-color: #ccc;
+        border-radius: 10px;
+        height: 20px;
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+    }
+    </style>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
