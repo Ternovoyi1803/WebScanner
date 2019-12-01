@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -72,6 +73,12 @@ namespace WebScanner.MVC.Controllers
             scanner.Resume();
 
             return View("Scan", repository.GetAll().OrderByDescending(x => x.DateStart));
+        }
+
+        [HttpGet]
+        public int GetHandlingUrlsCounter()
+        {
+            return (100 * scanner.UrlsCounter)/ scanner.MaxCountUrls;
         }
     }
 }

@@ -12,5 +12,8 @@ namespace WebScanner.BLL
         Task Stop();
         Task Pause();
         Task Resume();
+
+        int UrlsCounter { get; }
+        int MaxCountUrls { get; }
     }
 }

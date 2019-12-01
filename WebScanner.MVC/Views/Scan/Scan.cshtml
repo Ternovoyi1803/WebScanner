@@ -24,13 +24,21 @@
                             <script>
                                 function progress() {
                                     let elem = document.getElementById('progress_line'),
-                                        width = 1,
+                                        width = 0,
                                         id = setInterval(progressStatus, 100);
                                     function progressStatus() {
                                         if (width >= 100) {
                                             clearInterval(id);
                                         } else {
-                                            width++;
+                                            const xhr = new XMLHttpRequest()
+
+                                            xhr.open('GET', 'GetHandlingUrlsCounter')
+
+                                            xhr.onload = () => {
+                                                width = xhr.response;
+                                            }
+                                            xhr.send()
+
                                             elem.style.width = width + '%';
                                         }
                                     }
