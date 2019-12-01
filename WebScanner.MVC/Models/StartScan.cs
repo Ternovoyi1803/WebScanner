@@ -15,7 +15,7 @@ namespace WebScanner.MVC.Models
         public string StartUrl { get; set; }
 
         [Required(ErrorMessage = "Enter maximum number of threads")]
-        [Range(1, 10, ErrorMessage = "Enter maximum number of threads between 1 and 10")]
+        [Range(1, 100, ErrorMessage = "Enter maximum number of threads between 1 and 10")]
         public int MaxCountThreads { get; set; }
 
         [Required(ErrorMessage = "Enter search text")]

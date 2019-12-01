@@ -24,10 +24,10 @@
                             <script>
                                 function progress() {
                                     let elem = document.getElementById('progress_line'),
-                                        width = 0,
+                                        width = 1,
                                         id = setInterval(progressStatus, 100);
                                     function progressStatus() {
-                                        if (width >= 100) {
+                                        if (width > 100) {
                                             clearInterval(id);
                                         } else {
                                             const xhr = new XMLHttpRequest()
