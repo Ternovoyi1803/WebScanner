@@ -5,6 +5,12 @@
 
     <div>
         <p>
+            <a class="btn btn-default" href="Pause">Pause</a>
+        </p>
+        <p>
+            <a class="btn btn-default" href="Resume">Resume</a>
+        </p>
+        <p>
             <a class="btn btn-default" href="Update">Update</a>
         </p>
         <p>
@@ -25,14 +31,14 @@
             <tbody>
                 @foreach (WebScanner.DAL.UrlScan urlScan in Model)
                 {
-                <tr>
-                    <td>@urlScan.Url</td>
-                    <td>@urlScan.ScanStatus</td>
-                    <td>@urlScan.DateStart</td>
-                    <td>@urlScan.DateEnd</td>
-                    <td>@urlScan.FailureReason</td>
-                    <td>@urlScan.UrlParent</td>
-                </tr>
+                    <tr>
+                        <td>@urlScan.Url</td>
+                        <td>@urlScan.ScanStatus</td>
+                        <td>@urlScan.DateStart</td>
+                        <td>@urlScan.DateEnd</td>
+                        <td>@urlScan.FailureReason</td>
+                        <td>@urlScan.UrlParent</td>
+                    </tr>
                 }
             </tbody>
         </table>

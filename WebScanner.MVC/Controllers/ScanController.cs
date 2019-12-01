@@ -46,5 +46,21 @@ namespace WebScanner.MVC.Controllers
 
             return View("Scan", repository.GetAll().OrderByDescending(x => x.DateStart));
         }
+
+        [HttpGet]
+        public ActionResult Pause()
+        {
+            scanner.Pause();
+
+            return View("Scan", repository.GetAll().OrderByDescending(x => x.DateStart));
+        }
+
+        [HttpGet]
+        public ActionResult Resume()
+        {
+            scanner.Resume();
+
+            return View("Scan", repository.GetAll().OrderByDescending(x => x.DateStart));
+        }
     }
 }

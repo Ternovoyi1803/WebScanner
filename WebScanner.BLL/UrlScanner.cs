@@ -20,7 +20,29 @@ namespace WebScanner.BLL
     {
         private IRepository<UrlScan> repository;
         private ConcurrentQueue<UrlScan> queue;
+
         private CancellationTokenSource cancellationTokenSource;
+
+        private ManualResetEvent manual;
+        private object locker = new object();
+        private volatile bool isPaused;
+        private bool IsPaused
+        {
+            get
+            {
+                lock(locker)
+                {
+                    return isPaused;
+                }
+            }
+            set
+            {
+                lock(locker)
+                {
+                    isPaused = value;
+                }
+            }
+        }
         private Task[] tasks;
         private Regex regex;
 
@@ -48,6 +70,8 @@ namespace WebScanner.BLL
             queue.Enqueue(new UrlScan(url));
 
             cancellationTokenSource = new CancellationTokenSource();
+            manual = new ManualResetEvent(false);
+            isPaused = false;
             tasks = new Task[maxCountThreads];
 
             repository.RemoveAll();
@@ -72,8 +96,9 @@ namespace WebScanner.BLL
                         DoScan();
                         Thread.Sleep(1000);
                     }
-                }, i);
+                }, i, TaskCreationOptions.LongRunning);
                 tasks[i].Start();
+
             }
 
             return Task.CompletedTask;
@@ -86,8 +111,26 @@ namespace WebScanner.BLL
             return Task.CompletedTask;
         }
 
+        public Task Pause()
+        {
+            isPaused = true;
+
+            return Task.CompletedTask;
+        }
+
+        public Task Resume()
+        {
+            isPaused = false;
+            manual.Set();
+
+            return Task.CompletedTask;
+        }
+
         private void DoScan()
         {
+            if (IsPaused) // pause before scanning
+                manual.WaitOne();
+
             if (queue.IsEmpty)
                 return;
 
@@ -97,7 +140,7 @@ namespace WebScanner.BLL
 
             model.DateStart = DateTime.Now;
             model.ScanStatus = ScanStatus.Loading;
-            
+
             if (repository.AddIfNotExists(model))
             {
                 Interlocked.Increment(ref urlsCounter);
@@ -105,7 +148,13 @@ namespace WebScanner.BLL
                 string text = null;
                 try
                 {
+                    if (IsPaused) 
+                        manual.WaitOne(); // pause before loading webPage
+
                     text = FetchWebPage(model.Url);
+
+                    if (IsPaused) // pause before search text
+                        manual.WaitOne();
 
                     if (text.Contains(word))
                         model.ScanStatus = ScanStatus.Found;
@@ -119,6 +168,9 @@ namespace WebScanner.BLL
                 }
                 finally
                 {
+                    if (IsPaused) // pause before updating final status
+                        manual.WaitOne();
+
                     model.DateEnd = DateTime.Now;
                     repository.Update(model);
                 }

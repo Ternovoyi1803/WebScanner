@@ -145,7 +145,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\StartScan.cs" />
-    <Compile Include="IoC\NinjectRegistrations.cs" />
+    <Compile Include="Utils\NinjectRegistrations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

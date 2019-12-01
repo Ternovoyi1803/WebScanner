@@ -10,5 +10,7 @@ namespace WebScanner.BLL
     {
         Task Start();
         Task Stop();
+        Task Pause();
+        Task Resume();
     }
 }
