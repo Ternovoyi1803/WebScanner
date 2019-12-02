@@ -1,27 +1,37 @@
 ﻿@model WebScanner.MVC.Models.StartScan
 
-    <div class="jumbotron">
-        <form method="post" action="/Scan/Scan">
-            <div class="form-group">
-                <label for="Start url">Start url</label>
-                <input type="url" name="StartUrl" value="https://ustimov.org/posts/20/" class="form-control" id="Start url" placeholder="Enter start url">
-                <div class="error-msg">@Html.ValidationMessageFor(x => x.StartUrl)</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6" style="margin-top: 10px;padding:20px">
+            <div class="jumbotron">
+                <form method="post" action="/Scan/Scan" style="padding-left:20%;padding-right:20%">
+                    <p>
+                        <h2>Enter input data</h2>
+                    </p>
+                    <div class="form-group">
+                        <label for="Start url">Start url</label>
+                        <input type="url" name="StartUrl" value="https://ustimov.org/posts/20/" class="form-control" id="Start url" placeholder="Enter start url">
+                        <div class="error-msg">@Html.ValidationMessageFor(x => x.StartUrl)</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Maximum number of threads">Maximum number of threads</label>
+                        <input type="number" value="10" name="MaxCountThreads" class="form-control" id="Maximum number of threads" placeholder="Enter maximum number of threads">
+                        <div class="error-msg">@Html.ValidationMessageFor(x => x.MaxCountThreads)</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Search text">Search text</label>
+                        <input type="text" value="hello" name="SearchText" class="form-control" id="Search text" placeholder="Enter search text"><h7>
+                            <div class="error-msg">@Html.ValidationMessageFor(x => x.SearchText)</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Maximum number of scanned url">Maximum number of scanned url</label>
+                        <input type="number" value="100" name="MaxCountUrls" class="form-control" id="Maximum number of scanned url" placeholder="Enter maximum number urls for handling">
+                        <div class="error-msg">@Html.ValidationMessageFor(x => x.MaxCountUrls)</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Scan</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="Maximum number of threads">Maximum number of threads</label>
-                <input type="number" value="10" name="MaxCountThreads" class="form-control" id="Maximum number of threads" placeholder="Enter maximum number of threads">
-                <div class="error-msg">@Html.ValidationMessageFor(x => x.MaxCountThreads)</div>
-            </div>
-            <div class="form-group">
-                <label for="Search text">Search text</label>
-                <input type="text" value="hello" name="SearchText" class="form-control" id="Search text" placeholder="Enter search text"><h7>
-                <div class="error-msg">@Html.ValidationMessageFor(x => x.SearchText)</div>
-           </div>
-            <div class="form-group">
-                <label for="Maximum number of scanned url">Maximum number of scanned url</label>
-                <input type="number" value="100" name="MaxCountUrls" class="form-control" id="Maximum number of scanned url" placeholder="Enter maximum number urls for handling">
-                <div class="error-msg">@Html.ValidationMessageFor(x => x.MaxCountUrls)</div>               
-            </div>
-            <button type="submit" class="btn btn-primary">Scan</button>
-        </form>
-    </div>
+            <div class="col-sm-3"></div>
+        </div>
+</div>

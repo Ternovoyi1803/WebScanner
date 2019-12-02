@@ -3,113 +3,109 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
     <div>
-        <p>
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <a class="btn btn-info" role="button" href="Update">Update</a>
-                        <a class="btn btn-warning" role="button" href="Pause">Pause</a>
-                        <a class="btn btn-primary" role="button" href="Resume">Resume</a>
-                        <a class="btn btn-danger" role="button" href="Stop">Stop</a>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="row wrapper">
-                            <div>
-                                <div class="progress">
-                                    <div class="progress_line-bg">
-                                        <div class="progress_line" id="progress_line"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <script>
-                                function progress() {
-                                    let elem = document.getElementById('progress_line'),
-                                        width = 1,
-                                        id = setInterval(progressStatus, 100);
-                                    function progressStatus() {
-                                        if (width > 100) {
-                                            clearInterval(id);
-                                        } else {
-                                            const xhr = new XMLHttpRequest()
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">
+                    <a class="btn btn-info" role="button" href="Update" style="margin: 6px;">Update</a>
+                    <a class="btn btn-warning" role="button" href="Pause" style="margin: 6px;">Pause</a>
+                    <a class="btn btn-primary" role="button" href="Resume" style="margin: 6px;">Resume</a>
+                    <a class="btn btn-danger" role="button" href="Stop" style="margin: 6px;">Stop</a>
+                </div>
+            </div>
+            <div>
+                <div class="progress progress_line-bg" style="padding: 10px;margin-top:10px">
+                    <div class="progress_line progress-bar progress-bar-striped bg-success"
+                         role="progressbar"
+                         aria-valuenow="25"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         id="progress_line"></div>
+                </div>
+            </div>
+            <script>
+                function progress() {
+                    let elem = document.getElementById('progress_line'),
+                        width = 1,
+                        id = setInterval(progressStatus, 100);
+                    function progressStatus() {
+                        if (width > 100) {
+                            clearInterval(id);
+                        } else {
+                            const xhr = new XMLHttpRequest()
 
-                                            xhr.open('GET', 'GetHandlingUrlsCounter')
+                            xhr.open('GET', 'GetHandlingUrlsCounter')
 
-                                            xhr.onload = () => {
-                                                width = xhr.response;
-                                            }
-                                            xhr.send()
+                            xhr.onload = () => {
+                                width = xhr.response;
+                            }
+                            xhr.send()
 
-                                            elem.style.width = width + '%';
-                                        }
-                                    }
-                                }
-                                progress()
-                            </script>
-                        </div>
-                    </div>
-                </div>            
-        </div>
-    </p>
-    <div class="container">
-        <h3>Scanning Monitor</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Url</th>
-                    <th>ScanStatus</th>
-                    <th>DateStart</th>
-                    <th>DateEnd</th>
-                    <th>FailureReason</th>
-                    <th>UrlParent</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (WebScanner.DAL.UrlScan urlScan in Model)
-                {
-                    var scanStatus = urlScan.ScanStatus;
-                    var rowStyle = string.Empty;
-
-                    switch (scanStatus)
-                    {
-                        case WebScanner.DAL.ScanStatus.Found:
-                            {
-                                rowStyle = "success";
-                                break;
-                            }
-                        case WebScanner.DAL.ScanStatus.Loading:
-                            {
-                                rowStyle = "info";
-                                break;
-                            }
-                        case WebScanner.DAL.ScanStatus.Failure:
-                            {
-                                rowStyle = "danger";
-                                break;
-                            }
-                        case WebScanner.DAL.ScanStatus.NotFound:
-                            {
-                                rowStyle = "warning";
-                                break;
-                            }
-                        default:
-                            {
-                                rowStyle = "active";
-                                break;
-                            }
+                            elem.style.width = width + '%';
+                        }
                     }
-
-                    <tr class="@rowStyle">
-                        <th>@urlScan.Id</th>
-                        <td>@urlScan.Url</td>
-                        <td>@urlScan.ScanStatus</td>
-                        <td>@urlScan.DateStart</td>
-                        <td>@urlScan.DateEnd</td>
-                        <td>@urlScan.FailureReason</td>
-                        <td>@urlScan.UrlParent</td>
-                    </tr>
                 }
-            </tbody>
-        </table>
-    </div>
+                progress()
+            </script>
+            <h3>Scanning Monitor</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Url</th>
+                        <th>ScanStatus</th>
+                        <th>DateStart</th>
+                        <th>DateEnd</th>
+                        <th>FailureReason</th>
+                        <th>UrlParent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (WebScanner.DAL.UrlScan urlScan in Model)
+                    {
+                        var scanStatus = urlScan.ScanStatus;
+                        var rowStyle = string.Empty;
+
+                        switch (scanStatus)
+                        {
+                            case WebScanner.DAL.ScanStatus.Found:
+                                {
+                                    rowStyle = "success";
+                                    break;
+                                }
+                            case WebScanner.DAL.ScanStatus.Loading:
+                                {
+                                    rowStyle = "info";
+                                    break;
+                                }
+                            case WebScanner.DAL.ScanStatus.Failure:
+                                {
+                                    rowStyle = "danger";
+                                    break;
+                                }
+                            case WebScanner.DAL.ScanStatus.NotFound:
+                                {
+                                    rowStyle = "warning";
+                                    break;
+                                }
+                            default:
+                                {
+                                    rowStyle = "active";
+                                    break;
+                                }
+                        }
+
+                        <tr class="@rowStyle">
+                            <th>@urlScan.Id</th>
+                            <td>@urlScan.Url</td>
+                            <td>@urlScan.ScanStatus</td>
+                            <td>@urlScan.DateStart</td>
+                            <td>@urlScan.DateEnd</td>
+                            <td>@urlScan.FailureReason</td>
+                            <td>@urlScan.UrlParent</td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
 </div>

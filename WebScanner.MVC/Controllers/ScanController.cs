@@ -54,7 +54,8 @@ namespace WebScanner.MVC.Controllers
         [HttpGet]
         public ActionResult Stop()
         {
-            scanner.Stop();
+            if (scanner != null)
+                scanner.Stop();
 
             return View("Scan", repository.GetAll().OrderByDescending(x => x.DateStart));
         }
@@ -62,7 +63,8 @@ namespace WebScanner.MVC.Controllers
         [HttpGet]
         public ActionResult Pause()
         {
-            scanner.Pause();
+            if (scanner != null)
+                scanner.Pause();
 
             return View("Scan", repository.GetAll().OrderByDescending(x => x.DateStart));
         }
@@ -78,7 +80,10 @@ namespace WebScanner.MVC.Controllers
         [HttpGet]
         public int GetHandlingUrlsCounter()
         {
-            return (100 * scanner.UrlsCounter)/ scanner.MaxCountUrls;
+            if(scanner != null)
+                return (100 * scanner.UrlsCounter) / scanner.MaxCountUrls;
+
+            return 0;
         }
     }
 }
