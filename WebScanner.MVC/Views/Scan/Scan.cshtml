@@ -1,12 +1,23 @@
-﻿@model IEnumerable<WebScanner.DAL.UrlScan>
-@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@{
+    ViewBag.Title = "Scan Monitor";
+
+    var options = new AjaxOptions()
+    {
+        UpdateTargetId = "tabledata",
+        Url = Url.Action("ScanData"),
+        LoadingElementId = "loadingIndicator"
+    };
 }
+
+<h2>Scanning Monitor</h2>
+
+@using (Ajax.BeginForm("Scan", "Scan", options))
+{
     <div>
         <div class="container">
             <div class="row">
                 <div class="col-sm-6">
-                    <a class="btn btn-info" role="button" href="Update" style="margin: 6px;">Update</a>
+                    <a class="btn btn-info" role="button" href="Start" style="margin: 6px;">Start</a>
                     <a class="btn btn-warning" role="button" href="Pause" style="margin: 6px;">Pause</a>
                     <a class="btn btn-primary" role="button" href="Resume" style="margin: 6px;">Resume</a>
                     <a class="btn btn-danger" role="button" href="Stop" style="margin: 6px;">Stop</a>
@@ -47,7 +58,11 @@
                 }
                 progress()
             </script>
-            <h3>Scanning Monitor</h3>
+            <h4>Scan status</h4>
+            <p>
+                @Html.DropDownList("status", new SelectList(new[] { "All", "Loading", "Found", "NotFound", "Failure" }, (Model ?? "All")))
+                <input type="submit" value="Search" />
+            </p>
             <table class="table">
                 <thead>
                     <tr>
@@ -60,52 +75,14 @@
                         <th>UrlParent</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach (WebScanner.DAL.UrlScan urlScan in Model)
-                    {
-                        var scanStatus = urlScan.ScanStatus;
-                        var rowStyle = string.Empty;
-
-                        switch (scanStatus)
-                        {
-                            case WebScanner.DAL.ScanStatus.Found:
-                                {
-                                    rowStyle = "success";
-                                    break;
-                                }
-                            case WebScanner.DAL.ScanStatus.Loading:
-                                {
-                                    rowStyle = "info";
-                                    break;
-                                }
-                            case WebScanner.DAL.ScanStatus.Failure:
-                                {
-                                    rowStyle = "danger";
-                                    break;
-                                }
-                            case WebScanner.DAL.ScanStatus.NotFound:
-                                {
-                                    rowStyle = "warning";
-                                    break;
-                                }
-                            default:
-                                {
-                                    rowStyle = "active";
-                                    break;
-                                }
-                        }
-
-                        <tr class="@rowStyle">
-                            <th>@urlScan.Id</th>
-                            <td>@urlScan.Url</td>
-                            <td>@urlScan.ScanStatus</td>
-                            <td>@urlScan.DateStart</td>
-                            <td>@urlScan.DateEnd</td>
-                            <td>@urlScan.FailureReason</td>
-                            <td>@urlScan.UrlParent</td>
-                        </tr>
-                    }
+                <tbody id="tabledata">
+                    @Html.Action("ScanData", new { id = Model })
                 </tbody>
             </table>
         </div>
-</div>
+    </div>
+}
+@section scripts
+{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+}

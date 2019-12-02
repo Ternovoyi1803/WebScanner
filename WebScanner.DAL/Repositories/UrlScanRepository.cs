@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace WebScanner.DAL
 {
-    //TODO Lock review and optimize
     public class UrlScanRepository : IDisposable, IRepository<UrlScan>
     {
         private UrlScanDBContext db;

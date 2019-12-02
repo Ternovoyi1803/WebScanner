@@ -8,10 +8,12 @@ namespace WebScanner.BLL
 {
     public interface IUrlScanner
     {
-        Task Start();
-        Task Stop();
-        Task Pause();
-        Task Resume();
+        void Setup(UrlScannerSource source);
+
+        void Start();
+        void Stop();
+        void Pause();
+        void Resume();
 
         int UrlsCounter { get; }
         int MaxCountUrls { get; }

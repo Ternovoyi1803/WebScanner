@@ -45,6 +45,7 @@
     <Compile Include="Interfaces\IUrlScanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UrlScanner.cs" />
+    <Compile Include="Models\UrlScannerSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebScanner.DAL\WebScanner.DAL.csproj">
@@ -55,5 +56,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -8,7 +8,7 @@ namespace WebScanner.DAL
     {
         public UrlScanDBContext() : base("name=UrlScanDBContext")
         {
-            //Database.SetInitializer(new DropCreateDatabaseAlways<DataModel>());
+
         }
 
         public virtual DbSet<UrlScan> UrlScanEntities { get; set; }

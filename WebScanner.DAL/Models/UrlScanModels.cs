@@ -36,10 +36,10 @@ namespace WebScanner.DAL
 
     public enum ScanStatus
     {
-        None,
-        Loading,
-        Found,
-        NotFound,
-        Failure
+        None,     // default status
+        Loading,  // web page loading
+        Found,    // text was found in this URL
+        NotFound, // text was not found in this URL
+        Failure   // web page request caught an error
     }
 }

@@ -14,15 +14,13 @@ using WebScanner.DAL;
 
 namespace WebScanner.BLL
 {
-    //TODO how to pause tasks
-    //TODO add error logging
     public class UrlScanner: IUrlScanner
     {
-        private IRepository<UrlScan> repository;
+        #region === INNER STATE ===
+
+        private static UrlScanner instance;
         private ConcurrentQueue<UrlScan> queue;
-
         private CancellationTokenSource cancellationTokenSource;
-
         private ManualResetEvent manual;
         private object locker = new object();
         private volatile bool isPaused;
@@ -45,47 +43,68 @@ namespace WebScanner.BLL
         }
         private Task[] tasks;
         private Regex regex;
-
         private string url;
-        private string word;
-        private int maxCountThreads;
-        private int maxCountUrls;
+        private string text;
+        private int maxCountThreads = 1;
+        private int maxCountUrls = 1;
         private volatile int urlsCounter;
+        private bool isSetuped = false;
 
-        public int UrlsCounter => urlsCounter;
-        public int MaxCountUrls => maxCountUrls;
+        #endregion
 
-        public UrlScanner(string url, string word, int maxCountUrls, int maxCountThreads)
+        #region === EXTERNAL STATE ===
+
+        // Dependency injection by property
+        public IRepository<UrlScan> Repository { get; set; }
+        public int UrlsCounter { get { return urlsCounter; } }
+        public int MaxCountUrls { get { return maxCountUrls; } }
+
+        #endregion
+
+
+        public static UrlScanner GetUrlScanner(bool createNew = false)
         {
-            this.url = url;
-            this.word = word;
-            this.maxCountUrls = maxCountUrls;
-            this.maxCountThreads = maxCountThreads;
+            if (createNew)
+                instance = new UrlScanner();
+
+            if (instance == null)
+                instance = new UrlScanner();
+
+            return instance;
+        }
+
+
+        public void Setup(UrlScannerSource source)
+        {
+            if (source == null)
+                throw new NullReferenceException(nameof(source));
+
+            url = source.Url;
+            text = source.Text;
+            maxCountUrls = source.MaxCountUrls;
+            maxCountThreads = source.MaxCountThreads;
+            urlsCounter = 0;
 
             regex = new Regex(@"(?<url>https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}" +
                 @"\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))");
 
-            repository = new UrlScanRepository();
+            Repository = new UrlScanRepository();
             queue = new ConcurrentQueue<UrlScan>();
             queue.Enqueue(new UrlScan(url));
-
             cancellationTokenSource = new CancellationTokenSource();
             manual = new ManualResetEvent(false);
-            isPaused = false;
             tasks = new Task[maxCountThreads];
+            IsPaused = false;
+            isSetuped = true;
 
-            repository.RemoveAll();
+            Repository.RemoveAll();        
         }
 
-        // ctor with DI
-        public UrlScanner(string url, string word, int maxCountUrls, int maxCountThreads, IRepository<UrlScan> repository)
-            :this(url,word,maxCountUrls,maxCountThreads)
+        public void Start()
         {
-            this.repository = repository;
-        }
+            if (!isSetuped)
+                throw new InvalidOperationException("URLSCANNER_WAS_NOT_SETUPED_EXCEPTION");
 
-        public Task Start()
-        {
             for (int i = 0; i < tasks.Length; i++)
             {
                 tasks[i] = new Task((index) =>
@@ -94,37 +113,36 @@ namespace WebScanner.BLL
                     {
                         Debug.WriteLine($"DoScan from task {index}\tUrlCounter {urlsCounter}");
                         DoScan();
-                        Thread.Sleep(1000);
                     }
                 }, i, TaskCreationOptions.LongRunning);
                 tasks[i].Start();
-
             }
-
-            return Task.CompletedTask;
         }
 
-        public Task Stop()
+        public void Stop()
         {
+            if (!isSetuped)
+                throw new InvalidOperationException("URLSCANNER_WAS_NOT_SETUPED_EXCEPTION");
+
             cancellationTokenSource.Cancel();
-
-            return Task.CompletedTask;
         }
 
-        public Task Pause()
+        public void Pause()
         {
+            if (!isSetuped)
+                throw new InvalidOperationException("URLSCANNER_WAS_NOT_SETUPED_EXCEPTION");
+
             IsPaused = true;
-
-            return Task.CompletedTask;
         }
 
-        public Task Resume()
+        public void Resume()
         {
-            isPaused = false;
+            if (!isSetuped)
+                throw new InvalidOperationException("URLSCANNER_WAS_NOT_SETUPED_EXCEPTION");
+
+            IsPaused = false;
             manual.Set();
             manual.Reset();
-
-            return Task.CompletedTask;
         }
 
         private void DoScan()
@@ -135,14 +153,13 @@ namespace WebScanner.BLL
             if (queue.IsEmpty)
                 return;
 
-            UrlScan model;
-            if (!queue.TryDequeue(out model))
+            if (!queue.TryDequeue(out UrlScan model))
                 return;
 
             model.DateStart = DateTime.Now;
             model.ScanStatus = ScanStatus.Loading;
 
-            if (repository.AddIfNotExists(model))
+            if (Repository.AddIfNotExists(model))
             {
                 Interlocked.Increment(ref urlsCounter);
 
@@ -157,7 +174,7 @@ namespace WebScanner.BLL
                     if (IsPaused) // pause before search text
                         manual.WaitOne();
 
-                    if (text.Contains(word))
+                    if (text.Contains(this.text))
                         model.ScanStatus = ScanStatus.Found;
                     else
                         model.ScanStatus = ScanStatus.NotFound;
@@ -173,11 +190,12 @@ namespace WebScanner.BLL
                         manual.WaitOne();
 
                     model.DateEnd = DateTime.Now;
-                    repository.Update(model);
+                    Repository.Update(model);
                 }
 
                 if (!string.IsNullOrWhiteSpace(text))
                 { 
+                    // add child urls to queue
                     GetChildUrls(text)
                         .ForEach(x => queue.Enqueue(new UrlScan(x, model.Url)));
                 }

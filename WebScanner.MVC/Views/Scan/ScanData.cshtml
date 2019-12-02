@@ -1,0 +1,46 @@
+﻿@model IEnumerable<WebScanner.DAL.UrlScan>
+
+@foreach (WebScanner.DAL.UrlScan urlScan in Model)
+{
+    var scanStatus = urlScan.ScanStatus;
+    var rowStyle = string.Empty;
+
+    switch (scanStatus)
+    {
+        case WebScanner.DAL.ScanStatus.Found:
+            {
+                rowStyle = "success";
+                break;
+            }
+        case WebScanner.DAL.ScanStatus.Loading:
+            {
+                rowStyle = "info";
+                break;
+            }
+        case WebScanner.DAL.ScanStatus.Failure:
+            {
+                rowStyle = "danger";
+                break;
+            }
+        case WebScanner.DAL.ScanStatus.NotFound:
+            {
+                rowStyle = "warning";
+                break;
+            }
+        default:
+            {
+                rowStyle = "active";
+                break;
+            }
+    }
+
+    <tr class="@rowStyle">
+        <th>@urlScan.Id</th>
+        <td>@urlScan.Url</td>
+        <td>@urlScan.ScanStatus</td>
+        <td>@urlScan.DateStart</td>
+        <td>@urlScan.DateEnd</td>
+        <td>@urlScan.FailureReason</td>
+        <td>@urlScan.UrlParent</td>
+    </tr>
+}
