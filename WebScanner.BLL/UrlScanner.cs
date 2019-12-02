@@ -113,7 +113,7 @@ namespace WebScanner.BLL
 
         public Task Pause()
         {
-            isPaused = true;
+            IsPaused = true;
 
             return Task.CompletedTask;
         }
@@ -122,6 +122,7 @@ namespace WebScanner.BLL
         {
             isPaused = false;
             manual.Set();
+            manual.Reset();
 
             return Task.CompletedTask;
         }
