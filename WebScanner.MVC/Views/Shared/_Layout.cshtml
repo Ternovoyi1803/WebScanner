@@ -29,6 +29,15 @@
         position: relative;
         width: 100%;
     }
+     table {
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+
+        table th, table td {
+            overflow: hidden;
+        }
+
     </style>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")

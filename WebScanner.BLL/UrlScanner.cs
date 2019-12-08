@@ -61,6 +61,8 @@ namespace WebScanner.BLL
 
         #endregion
 
+        private UrlScanner()
+        { }
 
         public static UrlScanner GetUrlScanner(bool createNew = false)
         {
@@ -72,7 +74,6 @@ namespace WebScanner.BLL
 
             return instance;
         }
-
 
         public void Setup(UrlScannerSource source)
         {
