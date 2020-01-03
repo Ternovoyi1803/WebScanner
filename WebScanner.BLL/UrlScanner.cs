@@ -22,25 +22,7 @@ namespace WebScanner.BLL
         private ConcurrentQueue<UrlScan> queue;
         private CancellationTokenSource cancellationTokenSource;
         private ManualResetEvent manual;
-        private object locker = new object();
-        private volatile bool isPaused;
-        private bool IsPaused
-        {
-            get
-            {
-                lock(locker)
-                {
-                    return isPaused;
-                }
-            }
-            set
-            {
-                lock(locker)
-                {
-                    isPaused = value;
-                }
-            }
-        }
+        private object locker = new object();      
         private Task[] tasks;
         private Regex regex;
         private string url;
@@ -93,9 +75,8 @@ namespace WebScanner.BLL
             queue = new ConcurrentQueue<UrlScan>();
             queue.Enqueue(new UrlScan(url));
             cancellationTokenSource = new CancellationTokenSource();
-            manual = new ManualResetEvent(false);
+            manual = new ManualResetEvent(true);
             tasks = new Task[maxCountThreads];
-            IsPaused = false;
             isSetuped = true;
 
             Repository.RemoveAll();        
@@ -133,7 +114,7 @@ namespace WebScanner.BLL
             if (!isSetuped)
                 throw new InvalidOperationException("URLSCANNER_WAS_NOT_SETUPED_EXCEPTION");
 
-            IsPaused = true;
+            manual.Reset();
         }
 
         public void Resume()
@@ -141,15 +122,12 @@ namespace WebScanner.BLL
             if (!isSetuped)
                 throw new InvalidOperationException("URLSCANNER_WAS_NOT_SETUPED_EXCEPTION");
 
-            IsPaused = false;
             manual.Set();
-            manual.Reset();
         }
 
         private void DoScan()
         {
-            if (IsPaused) // pause before scanning
-                manual.WaitOne();
+            manual.WaitOne();
 
             if (queue.IsEmpty)
                 return;
@@ -167,13 +145,11 @@ namespace WebScanner.BLL
                 string text = null;
                 try
                 {
-                    if (IsPaused) 
-                        manual.WaitOne(); // pause before loading webPage
+                    manual.WaitOne(); // pause before loading webPage
 
                     text = FetchWebPage(model.Url);
 
-                    if (IsPaused) // pause before search text
-                        manual.WaitOne();
+                    manual.WaitOne();
 
                     if (text.Contains(this.text))
                         model.ScanStatus = ScanStatus.Found;
@@ -187,8 +163,7 @@ namespace WebScanner.BLL
                 }
                 finally
                 {
-                    if (IsPaused) // pause before updating final status
-                        manual.WaitOne();
+                    manual.WaitOne();
 
                     model.DateEnd = DateTime.Now;
                     Repository.Update(model);
